@@ -91,6 +91,7 @@ namespace parser {
         cout << "File: " << fileName << endl;
         auto data = new list<S>;
         ifstream file(fileName);
+        lineNum = 0;
         while (getline(file, lineData, '\n')) {
             lineNum++;
             parseLine(data);
