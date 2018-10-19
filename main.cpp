@@ -3,8 +3,26 @@
 #include <sstream>
 #include <fstream>
 #include <dirent.h>
+#include <cstring>
 
 using namespace std;
+namespace logger {
+    void timeStamp() {
+        time_t rawtime;
+        struct tm *timeinfo;
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+        char timeString[128];
+        strftime(timeString, 80, "%Y.%m.%d %T ", timeinfo);
+        cout << timeString;
+    }
+
+    void put(const char *message) {
+        timeStamp();
+        cout << message << endl;
+    }
+}
+
 struct S {
     int time;
     int value;
@@ -69,6 +87,7 @@ namespace parser {
 #undef CHECK_STRING
 
     list<S> *parse(const char *fileName) {
+        logger::timeStamp();
         cout << "File: " << fileName << endl;
         auto data = new list<S>;
         ifstream file(fileName);
@@ -77,6 +96,7 @@ namespace parser {
             parseLine(data);
         }
         file.close();
+        logger::timeStamp();
         cout << "Total: " << lineNum << " lines.\n";
         return data;
     }
@@ -99,16 +119,36 @@ namespace dirAnalyzer {
 void analize(const char *name) {
     auto data = parser::parse(name);
     data->sort([&](S a, S b) { return a.value < b.value; });
-    auto it = data->end();
-    for (int i = 0; i < 10 && it != data->begin(); ++i) it--;
+    logger::put("Sort done");
+    auto finish = data->end();
+    for (int i = 0; i < 10 && finish != data->begin(); ++i) finish--;
+    auto it = data->begin();
+    long sum = 0;
+    int num = 0;
+    printf("%8s %8s %8s %8s\n", "num", "value", "when", "average");
+    printf("%8s %8s %8s %8s\n", "", "", "", "value");
+    if (it != finish) {
+        for (; it != finish; ++it) {
+            sum += it->value;
+            ++num;
+            if (num < 5) {
+                printf("%8d %8d %8d %8ld\n", num, it->value, it->time, sum / num);
+            }
+        }
+        cout << "....\n";
+    }
     for (; it != data->end(); ++it) {
-        cout << it->time << ": " << it->value << endl;
+        sum += it->value;
+        ++num;
+        printf("%8d %8d %8d %8ld\n", num, it->value, it->time, sum / num);
     }
     delete (data);
 }
 
 int main(int argc, char **argv) {
+    logger::put("Starting");
     auto dir = dirAnalyzer::getList((argc == 2) ? argv[1] : ".");
+    logger::put("Have a dirList");
     for (const auto &file:*dir) {
         analize(file.data());
     }
