@@ -8,6 +8,6 @@
 namespace lineParserStringStream {
     using namespace std;
 
-    list <S> *parseBufferAndDelete(const char *const buffer);
+    list <S> *parseBufferAndDelete(const char *buffer);
 }
 #endif //ANALIZER_LINEPARSERSTRINGSTREAM_H

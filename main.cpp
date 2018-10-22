@@ -6,16 +6,6 @@
 
 using namespace std;
 
-namespace lineParserChar {
-    list<S> *parseBufferAndDelete(const char *const buffer) {
-        auto dataList = new list<S>;
-        auto i = buffer;
-
-        delete buffer;
-        return dataList;
-    }
-}
-
 namespace parser {
     list<S> *parse(const char *fileName) {
         logger::timeStamp();
