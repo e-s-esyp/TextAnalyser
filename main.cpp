@@ -48,9 +48,7 @@ namespace myStrings {
     }
 }
 
-namespace parser {
-    int lineNum = 0;
-    string lineData;
+namespace lineParserStringstream {
 
 #define INIT int n; char a[10];
 #define ERROR_CASE(Y) {\
@@ -66,7 +64,7 @@ namespace parser {
     ERROR_CASE(Y)\
 }
 
-    void parseLine(list<S> *data) {
+    inline void parseLine(const string &lineData, int lineNum, list<S> *data) {
         stringstream line(lineData);
         S s{};
         INIT
@@ -86,20 +84,33 @@ namespace parser {
 #undef CHECK_INT
 #undef CHECK_STRING
 
+    list<S> *parseBuffer(char *buffer) {
+        auto dataList = new list<S>;
+        stringstream fileString(buffer);
+        delete buffer;
+        string lineData;
+        int lineNum = 0;
+        while (getline(fileString, lineData, '\n')) {
+            lineNum++;
+            parseLine(lineData, lineNum, dataList);
+        }
+        logger::timeStamp();
+        cout << "Total: " << lineNum << " lines.\n";
+        return dataList;
+    }
+}
+
+namespace parser {
     list<S> *parse(const char *fileName) {
         logger::timeStamp();
         cout << "File: " << fileName << endl;
-        auto data = new list<S>;
-        ifstream file(fileName);
-        lineNum = 0;
-        while (getline(file, lineData, '\n')) {
-            lineNum++;
-            parseLine(data);
-        }
+        ifstream file(fileName, ios::binary);
+        int bufferLength = 200000000;
+        auto buffer = new char[bufferLength];
+        file.read(buffer, bufferLength);
         file.close();
-        logger::timeStamp();
-        cout << "Total: " << lineNum << " lines.\n";
-        return data;
+        logger::put("File read.");
+        return lineParserStringstream::parseBuffer(buffer);
     }
 };
 
@@ -122,7 +133,7 @@ void analize(const char *name) {
     data->sort([&](S a, S b) { return a.value < b.value; });
     logger::put("Sort done");
     auto finish = data->end();
-    for (int i = 0; i < 10 && finish != data->begin(); ++i) finish--;
+    for (int i = 0; i < 20 && finish != data->begin(); ++i) finish--;
     auto it = data->begin();
     long sum = 0;
     int num = 0;
@@ -147,7 +158,7 @@ void analize(const char *name) {
 }
 
 int main(int argc, char **argv) {
-    logger::put("Starting");
+    logger::put("Starting. WARNING: max file size 200 000 000 byte");
     auto dir = dirAnalyzer::getList((argc == 2) ? argv[1] : ".");
     logger::put("Have a dirList");
     for (const auto &file:*dir) {
