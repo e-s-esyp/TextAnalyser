@@ -4,7 +4,6 @@
 #include "mainStructure.h"
 #include <list>
 
-#define MAX_BUF_SIZE 200000000
 namespace analyzer {
     using namespace std;
 

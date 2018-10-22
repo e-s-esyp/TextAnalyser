@@ -1,6 +1,6 @@
 #include "analyzer.h"
 #include "logger.h"
-#include "lineParserStringStream.h"
+#include "lineParserChar.h"
 #include <iostream>
 #include <fstream>
 
@@ -15,7 +15,7 @@ namespace analyzer {
         file.read(buffer, MAX_BUF_SIZE);
         file.close();
         logger::put("File read.");
-        return lineParserStringStream::parseBufferAndDelete(buffer);
+        return lineParserChar::parseBufferAndDelete(buffer);
     }
 
     void analize(list<S> *data) {

@@ -22,7 +22,7 @@ namespace logger {
         va_list args;
         va_start (args, format);
         vsprintf(buffer, format, args);
-        cout << buffer;
+        cout << buffer << endl;
         va_end (args);
     }
 }
