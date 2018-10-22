@@ -2,5 +2,10 @@ cmake_minimum_required(VERSION 3.9)
 project(analizer)
 
 set(CMAKE_CXX_STANDARD 17)
-
-add_executable(analizer main.cpp)
+add_library(myStrings myStrings.h myStrings.cpp)
+add_library(logger logger.h logger.cpp)
+add_library(lineParserStringStream lineParserStringStream.h lineParserStringStream.cpp)
+target_link_libraries(lineParserStringStream myStrings)
+add_library(dirAnalyzer dirAnalyzer.h dirAnalyzer.cpp)
+add_executable(analizer main.cpp mainStructure.h)
+target_link_libraries(analizer myStrings logger lineParserStringStream dirAnalyzer )
