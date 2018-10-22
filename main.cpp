@@ -48,12 +48,12 @@ namespace myStrings {
     }
 }
 
-namespace lineParserStringstream {
+namespace lineParserStringStream {
 
 #define INIT int n; char a[10];
 #define ERROR_CASE(Y) {\
     cout << "Error:" << " row " << lineNum << " place "<< (Y) << " data corrupt (" << lineData << ")" <<"\n";\
-    return;\
+    continue;\
 }
 #define PARSE_INT(X, Y) if (!(line >> (X))) ERROR_CASE(Y)
 #define CHECK_INT(Y)  if (!(line >> n)) ERROR_CASE(Y)
@@ -64,26 +64,6 @@ namespace lineParserStringstream {
     ERROR_CASE(Y)\
 }
 
-    inline void parseLine(const string &lineData, int lineNum, list<S> *data) {
-        stringstream line(lineData);
-        S s{};
-        INIT
-        PARSE_INT(s.time, 1)
-        CHECK_STRING(", ", 2, 2)
-        PARSE_INT(s.value, 3)
-        CHECK_STRING(", ", 2, 4)
-        CHECK_INT(5)
-        CHECK_STRING(", ", 2, 6)
-        CHECK_INT(7)
-        data->push_back(s);
-    }
-
-#undef INIT
-#undef ERROR_CASE
-#undef PARSE_INT
-#undef CHECK_INT
-#undef CHECK_STRING
-
     list<S> *parseBuffer(char *buffer) {
         auto dataList = new list<S>;
         stringstream fileString(buffer);
@@ -92,12 +72,27 @@ namespace lineParserStringstream {
         int lineNum = 0;
         while (getline(fileString, lineData, '\n')) {
             lineNum++;
-            parseLine(lineData, lineNum, dataList);
+            stringstream line(lineData);
+            S s{};
+            INIT
+            PARSE_INT(s.time, 1)
+            CHECK_STRING(", ", 2, 2)
+            PARSE_INT(s.value, 3)
+            CHECK_STRING(", ", 2, 4)
+            CHECK_INT(5)
+            CHECK_STRING(", ", 2, 6)
+            CHECK_INT(7)
+            dataList->push_back(s);
         }
         logger::timeStamp();
         cout << "Total: " << lineNum << " lines.\n";
         return dataList;
     }
+#undef INIT
+#undef ERROR_CASE
+#undef PARSE_INT
+#undef CHECK_INT
+#undef CHECK_STRING
 }
 
 namespace parser {
@@ -110,7 +105,7 @@ namespace parser {
         file.read(buffer, bufferLength);
         file.close();
         logger::put("File read.");
-        return lineParserStringstream::parseBuffer(buffer);
+        return lineParserStringStream::parseBuffer(buffer);
     }
 };
 
