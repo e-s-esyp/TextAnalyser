@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-    logger::put("Starting. WARNING: max file size""byte");
+    logger::put("Starting. WARNING: max file size %d byte", MAX_BUF_SIZE);
     auto dir = dirAnalyzer::getList((argc == 2) ? argv[1] : ".");
     logger::put("Have a dirList");
     for (const auto &file:*dir) {
