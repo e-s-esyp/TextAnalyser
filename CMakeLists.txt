@@ -7,9 +7,6 @@ add_library(myStrings myStrings.h myStrings.cpp)
 
 add_library(logger logger.h logger.cpp)
 
-add_library(lineParserStringStream lineParserStringStream.h lineParserStringStream.cpp)
-target_link_libraries(lineParserStringStream myStrings)
-
 add_library(lineParserChar lineParserChar.h lineParserChar.cpp)
 
 add_library(analyzer analyzer.h analyzer.cpp)

@@ -12,10 +12,11 @@ namespace analyzer {
         cout << "File: " << fileName << endl;
         ifstream file(fileName, ios::binary);
         auto buffer = new char[MAX_BUF_SIZE];
-        file.read(buffer, MAX_BUF_SIZE);
+        file.read(buffer, MAX_BUF_SIZE - 1);
+        const long actualBufferSize = file.gcount();
         file.close();
         logger::put("File read.");
-        return lineParserChar::parseBufferAndDelete(buffer);
+        return lineParserChar::parseBufferAndDelete(buffer, actualBufferSize);
     }
 
     void analize(list<S> *data) {

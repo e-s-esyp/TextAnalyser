@@ -5,59 +5,63 @@
 namespace lineParserChar {
     using namespace std;
 #define IS_DECIMAL(X) ('0' <= (X) && (X) <= '9')
-#define INT(X) n = 0;\
-    while (IS_DECIMAL(*i)) {\
-        n = n * 10 + *(i++) - '0';\
-    }\
-    (X) = n;
-#define SKIP_INT while (IS_DECIMAL(*i)) {\
-        i++;\
-    }
-#define CHECK(X) j = X;\
-    place = 0;\
-    while (*i && *j && (*i == *j) && (place < 1000) && (bufferPlaceCheck < MAX_BUF_SIZE)) {\
-        i++;\
-        j++;\
-        place++;\
-        bufferPlaceCheck++;\
-    }\
-    if (*i && *j) {\
-        char *k = lineData;\
-        const char *l = lineStart;\
-        int placeCheck = 0;\
-        while ((*l != '\n') && *l && (placeCheck < 1000)) {\
-            *(k++) = *(l++);\
-            placeCheck++;\
+#define INT(X)\
+    {\
+        int n = 0;\
+        while (IS_DECIMAL(*bufferHead) && (bufferHeadIndex < actualBufferSize)) {\
+            n = n * 10 + *(bufferHead++) - '0';\
+            bufferHeadIndex++;\
         }\
-        *k = 0;\
-        cout << "Error:" << " row " << lineNum << " place "<< place << " data corrupt (" << lineData << ") must be ("<< (X) <<")\n";\
-        placeCheck = 0;\
-        while ((*i != '\n') && *i && (bufferPlaceCheck < MAX_BUF_SIZE)) {\
-            i++;\
-            bufferPlaceCheck++;\
-        };\
-        if (*i == '\n'){\
-            i++;\
-            bufferPlaceCheck++;\
-        }\
-        continue;\
+        (X) = n;\
     }
+#define SKIP_INT\
+    while (IS_DECIMAL(*bufferHead) && (bufferHeadIndex < actualBufferSize)) {\
+        bufferHead++;\
+        bufferHeadIndex++;\
+    }
+#define CHECK(X)\
+    {\
+        long patternPlace = bufferHeadIndex - lineStartIndex;\
+        const char *patternHead = X;\
+        while (*patternHead && (*bufferHead == *patternHead) && (bufferHeadIndex < actualBufferSize)) {\
+            bufferHead++;\
+            bufferHeadIndex++;\
+            patternHead++;\
+        }\
+        if (*patternHead && (bufferHeadIndex < actualBufferSize || (X) != lineDelimiter)) {\
+            char *k = lineData;\
+            const char *l = buffer + lineStartIndex;\
+            long lineCheckIndex = 0;\
+            while ((*l != '\n') && (lineCheckIndex < actualBufferSize)) {\
+                *(k++) = *(l++);\
+                lineCheckIndex++;\
+            }\
+            *k = 0;\
+            cout << "Error:" << " row " << lineNum << " data (" << lineData << ") corrupt," << " on place "<< patternPlace << " must be ("<< (X) <<")\n";\
+            while ((*bufferHead != '\n') && (bufferHeadIndex < actualBufferSize)) {\
+                bufferHead++;\
+                bufferHeadIndex++;\
+            };\
+            if (bufferHeadIndex < actualBufferSize){\
+                bufferHead++;\
+                bufferHeadIndex++;\
+            }\
+            continue;\
+        }\
+    }\
 
-    list<S> *parseBufferAndDelete(const char *const buffer) {
+    list<S> *parseBufferAndDelete(const char *const buffer, const long actualBufferSize) {
         auto dataList = new list<S>;
-        const char *i = buffer;
+        const char *bufferHead = buffer;
+        long bufferHeadIndex = 0;
         S s{};
-        int n;
-        const char *j;
         const char *delimiter = ", ";
         const char *lineDelimiter = "\n";
         int lineNum = 0;
         char lineData[1000];
-        int place = 0;\
-        const char *lineStart;
-        int bufferPlaceCheck = 0;
-        while (*i) {
-            lineStart = i;
+        long lineStartIndex;
+        while (bufferHeadIndex < actualBufferSize) {
+            lineStartIndex = bufferHeadIndex;
             lineNum++;
             INT(s.time)
             CHECK(delimiter)
