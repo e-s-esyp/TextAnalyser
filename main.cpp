@@ -6,11 +6,13 @@ using namespace std;
 
 int main(int argc, char **argv) {
     logger::put("Starting. WARNING: max file size %d byte", MAX_BUF_SIZE);
-    auto dir = dirAnalyzer::getList((argc == 2) ? argv[1] : ".");
+    auto dirName = (argc == 2) ? argv[1] : ".";
+    auto dir = dirAnalyzer::getList(dirName);
     dir->sort();
     logger::put("Have a dirList");
     for (const auto &file:*dir) {
-        analyzer::analize(analyzer::parse(file.data()));
+        string fullName(dirName);
+        analyzer::analize(analyzer::parse(fullName.append("/").append(file).data()));
     }
     return 0;
 }
