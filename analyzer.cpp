@@ -5,12 +5,22 @@
 void fileAnalyzer::parse() {
     report.putTimed("File: %s", name.data());
     ifstream file(name, ios::binary);
-    auto buffer = new char[MAX_BUF_SIZE];
-    file.read(buffer, MAX_BUF_SIZE - 1);
+    file.seekg(0, ios_base::end);
+    long size = file.tellg();
+    if (size > MAX_BUF_SIZE - 1) {
+        size = MAX_BUF_SIZE - 1;
+    }
+    auto buffer = new char[size + 59];
+    file.seekg(0, ios_base::beg);
+    file.read(buffer, size);
     const long actualBufferSize = file.gcount();
+    for (long i = actualBufferSize; i < size + 59; ++i) {
+        buffer[i] = 0;
+    }
     file.close();
     report.putTimed("File read.");
-    data = lineParserChar::parseBufferAndDelete(buffer, actualBufferSize, report);
+    data = lineParserChar::parseBuffer(buffer, actualBufferSize, report);
+    delete[] buffer;
 }
 
 void fileAnalyzer::analyze() {
@@ -38,7 +48,7 @@ void fileAnalyzer::analyze() {
         ++num;
         report.put("%8d %8d %8d %8ld\n", num, it->value, it->time, sum / num);
     }
-    delete (data);
+    delete data;
 }
 
 void fileAnalyzer::perform() {

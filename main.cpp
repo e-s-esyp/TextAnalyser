@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
     for (const auto &file:*dir) {
         analyzer.emplace_back(file);
     }
+    delete dir;
     for (auto &file:analyzer) {
         file.performInThread();
 //        file.perform();

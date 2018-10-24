@@ -8,7 +8,7 @@
 namespace lineParserChar {
     using namespace std;
 
-    list<S> *parseBufferAndDelete(const char *buffer, long actualBufferSize, stringLogger &logger);
+    list<S> *parseBuffer(const char *buffer,  long actualBufferSize, stringLogger &logger);
 }
 
 #endif //ANALIZER_LINEPARSERCHAR_H

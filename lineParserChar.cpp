@@ -48,7 +48,7 @@ namespace lineParserChar {
         }\
     }
 
-    list<S> *parseBufferAndDelete(const char *buffer, const long actualBufferSize, stringLogger &logger) {
+    list<S> *parseBuffer(const char *buffer, const long actualBufferSize, stringLogger &logger) {
         auto dataList = new list<S>;
         const char *bufferHead = buffer;
         long bufferHeadIndex = 0;
@@ -72,7 +72,6 @@ namespace lineParserChar {
             dataList->push_back(s);
         }
         logger.putTimed("Total: %d lines.", lineNum);
-        delete buffer;
         return dataList;
     }
 }
