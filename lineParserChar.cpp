@@ -1,6 +1,4 @@
 #include "lineParserChar.h"
-#include "logger.h"
-#include <iostream>
 
 namespace lineParserChar {
     using namespace std;
@@ -37,7 +35,7 @@ namespace lineParserChar {
                 lineCheckIndex++;\
             }\
             *k = 0;\
-            cout << "Error:" << " row " << lineNum << " data (" << lineData << ") corrupt," << " on place "<< patternPlace << " must be ("<< (X) <<")\n";\
+            logger.put("Error:  row %d data (%s) corrupt, on place %d must be (%s)\n", lineNum, lineData, patternPlace, X);\
             while ((*bufferHead != '\n') && (bufferHeadIndex < actualBufferSize)) {\
                 bufferHead++;\
                 bufferHeadIndex++;\
@@ -48,9 +46,9 @@ namespace lineParserChar {
             }\
             continue;\
         }\
-    }\
+    }
 
-    list<S> *parseBufferAndDelete(const char *const buffer, const long actualBufferSize) {
+    list<S> *parseBufferAndDelete(const char *buffer, const long actualBufferSize, stringLogger &logger) {
         auto dataList = new list<S>;
         const char *bufferHead = buffer;
         long bufferHeadIndex = 0;
@@ -73,8 +71,7 @@ namespace lineParserChar {
             CHECK(lineDelimiter)
             dataList->push_back(s);
         }
-        logger::timeStamp();
-        cout << "Total: " << lineNum << " lines.\n";
+        logger.putTimed("Total: %d lines.", lineNum);
         delete buffer;
         return dataList;
     }

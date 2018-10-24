@@ -1,3 +1,4 @@
+#include <iostream>
 #include "logger.h"
 #include "dirAnalyzer.h"
 #include "analyzer.h"
@@ -10,9 +11,16 @@ int main(int argc, char **argv) {
     auto dir = dirAnalyzer::getList(dirName);
     dir->sort();
     logger::put("Have a dirList");
+    list<fileAnalyzer> analyzer;
     for (const auto &file:*dir) {
-        string fullName(dirName);
-        analyzer::analize(analyzer::parse(fullName.append("/").append(file).data()));
+        analyzer.emplace_back(file);
+    }
+    for (auto &file:analyzer) {
+        file.performInThread();
+//        file.perform();
+    }
+    for (auto &file:analyzer) {
+        cout << file.getReport();
     }
     return 0;
 }

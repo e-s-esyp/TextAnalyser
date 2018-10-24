@@ -3,6 +3,7 @@
 
 #include <list>
 #include <string>
+#include "mainStructure.h"
 
 namespace dirAnalyzer {
     using namespace std;
