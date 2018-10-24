@@ -22,5 +22,6 @@ int main(int argc, char **argv) {
     for (auto &file:analyzer) {
         cout << file.getReport();
     }
+    logger::put("All done.");
     return 0;
 }
