@@ -85,6 +85,7 @@ namespace dirAnalyzer {
             tasks.push_back(new fileAnalyzer(file));
         }
         delete files;
+        //TODO: define by argv
         int numControls = 3;
         threadControl *controls[numControls];
         for (int i = 0; i < numControls; i++) {
