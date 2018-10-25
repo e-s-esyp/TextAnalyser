@@ -9,5 +9,8 @@ namespace dirAnalyzer {
     using namespace std;
 
     list <string> *getList(const char *dirName, const char *filter = ".log");
+
+    void analyze(const char *name);
+
 }
 #endif //ANALIZER_DIRANALYZER_H

@@ -94,7 +94,6 @@ namespace lineParserChar {
         auto dataList = new list<S>;
         parser par(buffer, actualBufferSize, &logger);
         S s{};
-        int lineNum = 0;
         while (par.canContinue()) {
             par.newLine();
             par.parseInt(s.time);
@@ -107,7 +106,7 @@ namespace lineParserChar {
             if (par.parseCheck("\n")) continue;
             dataList->push_back(s);
         }
-        logger.putTimed("Total: %d lines.", lineNum);
+        logger.putTimed("Total: %d lines.", par.lineNum);
         return dataList;
     }
 }

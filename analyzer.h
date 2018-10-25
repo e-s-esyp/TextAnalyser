@@ -14,8 +14,7 @@ protected:
     string name{};
     stringLogger report;
     list<S> *data = nullptr;
-    thread executor;
-
+    bool finished;
     void parse();
 
     void analyze();
@@ -23,15 +22,16 @@ protected:
 public:
     explicit fileAnalyzer(const string &fullName) {
         name.assign(fullName);
+        finished = false;
     }
 
     void perform();
 
-    void performInThread();
-
     string getReport();
 
-    friend void theFunction(fileAnalyzer *a);
+    string getName();
+
+    bool isFinished();
 };
 
 #endif //ANALIZER_PARSER_H

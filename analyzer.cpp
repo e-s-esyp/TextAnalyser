@@ -54,22 +54,18 @@ void fileAnalyzer::analyze() {
 void fileAnalyzer::perform() {
     parse();
     analyze();
+    finished = true;
 }
 
 string fileAnalyzer::getReport() {
-    if (executor.joinable()) {
-        executor.join();
-        report.putTimed("Finish ------------------------------");
-    }
     return report.get();
 }
 
-void theFunction(fileAnalyzer *a) {
-    a->perform();
+string fileAnalyzer::getName() {
+    return name;
 }
 
-void fileAnalyzer::performInThread() {
-    report.put("\n")->putTimed("Start -------------------------------");
-    executor = thread(theFunction, this);
+bool fileAnalyzer::isFinished() {
+    return finished;
 }
 
