@@ -10,11 +10,11 @@ void fileAnalyzer::parse() {
     if (size > MAX_BUF_SIZE - 1) {
         size = MAX_BUF_SIZE - 1;
     }
-    auto buffer = new char[size + 59];
+    auto buffer = new char[size];
     file.seekg(0, ios_base::beg);
     file.read(buffer, size);
     const long actualBufferSize = file.gcount();
-    for (long i = actualBufferSize; i < size + 59; ++i) {
+    for (long i = actualBufferSize; i < size; ++i) {
         buffer[i] = 0;
     }
     file.close();

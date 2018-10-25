@@ -1,5 +1,5 @@
 #include "dirAnalyzer.h"
-#include "myStrings.h"
+#include "myStrings.cpp"
 #include <dirent.h>
 
 namespace dirAnalyzer {

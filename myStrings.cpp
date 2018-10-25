@@ -1,6 +1,9 @@
-#include "myStrings.h"
 namespace myStrings {
-    bool isEqual(char *a, const char *b) {
+    inline bool isDecimal(char x) {
+        return '0' <= x && x <= '9';
+    }
+
+    inline bool isEqual(const char *a, const char *b) {
         while (*a && *b && *a == *b) {
             a++;
             b++;
@@ -8,7 +11,7 @@ namespace myStrings {
         return *a == *b;
     }
 
-    bool endsWith(char *name, const char *filter) {
+    inline bool endsWith(char const *name, char const *filter) {
         while (*name) ++name;
         const char *i = filter;
         while (*i) {

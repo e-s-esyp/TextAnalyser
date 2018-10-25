@@ -3,7 +3,6 @@
 #include <cstdarg>
 
 namespace logger {
-
     string getTimeStamp() {
         time_t rawtime;
         struct tm *timeinfo;
@@ -19,10 +18,19 @@ namespace logger {
     }
 
     void put(const char *format, ...) {
+        va_list args;
+        va_start (args, format);
+        char buffer[1000000];
+        vsprintf(buffer, format, args);
+        cout << buffer;
+        va_end (args);
+    }
+
+    void putTimed(const char *format, ...) {
         timeStamp();
         va_list args;
         va_start (args, format);
-        char buffer[1000];
+        char buffer[1000000];
         vsprintf(buffer, format, args);
         cout << buffer << endl;
         va_end (args);
