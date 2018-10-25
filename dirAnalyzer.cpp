@@ -3,6 +3,7 @@
 #include "logger.h"
 #include "analyzer.h"
 #include <dirent.h>
+#include <fstream>
 
 namespace dirAnalyzer {
     list<string> *getList(const char *dirName, const char *filter) {
@@ -13,6 +14,22 @@ namespace dirAnalyzer {
             string dirNameString(dirName);
             while ((dp = readdir(dirp)) != nullptr) {
                 if (myStrings::endsWith(dp->d_name, filter))
+                    result->push_back(dirNameString + "/" + string(dp->d_name));
+            }
+            closedir(dirp);
+        }
+        return result;
+    }
+
+    vector<string> *getSubDirs(const char *dirName) {
+        auto result = new vector<string>;
+        auto dirp = opendir(dirName);
+        if (dirp != nullptr) {
+            dirent *dp;
+            string dirNameString(dirName);
+            while ((dp = readdir(dirp)) != nullptr) {
+                if (dp->d_type == DT_DIR && !myStrings::isEqual(dp->d_name, ".") &&
+                    !myStrings::isEqual(dp->d_name, ".."))
                     result->push_back(dirNameString + "/" + string(dp->d_name));
             }
             closedir(dirp);
@@ -55,10 +72,7 @@ namespace dirAnalyzer {
     };
 
     void theFunction(fileAnalyzer *analyzer) {
-//        logger::putTimed("Start perform for %s", analyzer->getName().data());
         analyzer->perform();
-//        logger::putTimed("Finish perform for %s", analyzer->getName().data());
-//        logger::put(analyzer->getReport().data());
     }
 
     void analyze(const char *dirName) {
@@ -87,21 +101,18 @@ namespace dirAnalyzer {
         for (const auto &control : controls) {
             if (control->theTask != nullptr) {
                 while (!control->theTask->isFinished()) {}
-//                logger::putTimed("Waiting result for %s finished = %s",
-//                                 control->theTask->getName().data(),
-//                                 control->theTask->isFinished() ? "true" : "false");
                 if (control->theThread.joinable()) {
                     control->theThread.join();
                 }
             }
             delete control;
         }
+        ofstream output(string(dirName) + ".report");
         for (const auto task:tasks) {
-//            logger::putTimed("Printing result for %s finished = %s", task->getName().data(),
-//                             task->isFinished() ? "true" : "false");
-            logger::put(task->getReport().data());
+            output << task->getReport();
             delete task;
         }
+        output.close();
     }
 }
 

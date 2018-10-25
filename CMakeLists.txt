@@ -16,5 +16,5 @@ target_link_libraries(parserAnalyzer lineParserChar stringLogger)
 
 add_library(dirAnalyzer dirAnalyzer.h dirAnalyzer.cpp myStrings.cpp)
 
-add_executable(analyzer main.cpp mainStructure.h)
-target_link_libraries(analyzer logger dirAnalyzer parserAnalyzer)
+add_executable(analyzer main.cpp mainStructure.h myStrings.cpp)
+target_link_libraries(analyzer logger dirAnalyzer parserAnalyzer )

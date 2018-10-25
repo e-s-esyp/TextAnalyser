@@ -3,13 +3,14 @@
 
 #include <list>
 #include <string>
+#include <vector>
 #include "mainStructure.h"
 
 namespace dirAnalyzer {
     using namespace std;
 
     list <string> *getList(const char *dirName, const char *filter = ".log");
-
+    vector<string> *getSubDirs(const char *dirName);
     void analyze(const char *name);
 
 }
