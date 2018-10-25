@@ -69,9 +69,11 @@ namespace lineParserChar {
                 char *k = lineData;
                 const char *l = buffer + lineStartIndex;
                 long lineCheckIndex = 0;
-                while ((*l != '\n') && (lineCheckIndex < actualBufferSize)) {
+                int n = 0;
+                while ((*l != '\n') && (lineCheckIndex < actualBufferSize) && (n < 999)) {
                     *(k++) = *(l++);
                     lineCheckIndex++;
+                    n++;
                 }
                 *k = 0;
                 logger->put("Error:  row %d data (%s) corrupt, on place %d must be (%s)\n", lineNum,

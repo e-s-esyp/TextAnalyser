@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
         logger::put("%2d %s\n", i++, subdir.data());
     }
     string choose;
-    if (argc != 2 || !myStrings::isEqual(argv[1], "a")) {
+    if (argc != 2 || !myStrings::isEqual(argv[1], "-a")) {
         logger::put("Choose index or 'a' for all: ");
         cin >> choose;
         if (choose == "a") {
@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
                 dirAnalyzer::analyze(subdir.data());
             }
         } else {
+            //TODO
         }
     } else {
         for (const auto &subdir:*subdirs) {

@@ -7,7 +7,7 @@ using namespace std;
 
 class stringLogger {
     string data;
-    char buffer[1000];
+    char buffer[10000];
 
 public:
     stringLogger *put(const char *format, ...);
