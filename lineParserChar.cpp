@@ -64,8 +64,8 @@ namespace lineParserChar {
                 bufferHeadIndex++;
                 patternHead++;
             }
-            if (*patternHead &&
-                (bufferHeadIndex < actualBufferSize || myStrings::isEqual(pattern, "\n"))) {
+            if (*patternHead && (bufferHeadIndex < actualBufferSize ||
+                                 !myStrings::isEqual(pattern, "\n"))) {
                 char *k = lineData;
                 const char *l = buffer + lineStartIndex;
                 long lineCheckIndex = 0;

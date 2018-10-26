@@ -14,7 +14,7 @@ void fileAnalyzer::parse() {
     file.seekg(0, ios_base::beg);
     file.read(buffer, size);
     fileSize = file.gcount();
-    for (long i = fileSize; i < size; ++i) {
+    for (long i = fileSize; i <= size; ++i) {
         buffer[i] = 0;
     }
     file.close();
@@ -24,6 +24,8 @@ void fileAnalyzer::parse() {
 }
 
 void fileAnalyzer::analyze() {
+    auto last = data->end();
+    report.put("Last time = %d\n", (--last)->time);
     data->sort([&](S a, S b) { return a.value < b.value; });
     report.putTimed("Sort done");
     auto finish = data->end();
@@ -31,14 +33,14 @@ void fileAnalyzer::analyze() {
     auto it = data->begin();
     long sum = 0;
     int num = 0;
-    report.put("%8s %8s %8s %8s\n", "num", "value", "when", "average");
-    report.put("%8s %8s %8s %8s\n", "", "", "", "value");
+    report.put("%8s %11s %8s %11s\n", "num", "value", "when", "average");
+    report.put("%8s %11s %8s %11s\n", "", "", "", "value");
     if (it != finish) {
         for (; it != finish; ++it) {
             sum += it->value;
             ++num;
             if (num < 5) {
-                report.put("%8d %8d %8d %8ld\n", num, it->value, it->time, sum / num);
+                report.put("%8d %11ld %8d %11ld\n", num, it->value, it->time, sum / num);
             }
         }
         report.put("....\n");
@@ -46,25 +48,31 @@ void fileAnalyzer::analyze() {
     for (; it != data->end(); ++it) {
         sum += it->value;
         ++num;
-        report.put("%8d %8d %8d %8ld\n", num, it->value, it->time, sum / num);
+        report.put("%8d %11ld %8d %11ld\n", num, it->value, it->time, sum / num);
     }
-    int percentile[11];
-    int percent = 0;
+    const int divisions = 100;
+    int percentile[divisions + 1];
+    int percentIndex = 0;
     long sum2 = 0;
     num = 0;
-    report.put("%8s %8s %8s %8s %8s %8s\n", "percent", "sum", "num", "value", "when", "average");
-    report.put("%8s %8s %8s %8s %8s %8s\n", "", "", "", "", "", "value");
+    int lastnum = 0;
+    report.put("%8s %11s %8s %11s %8s %11s\n", "percent", "sum", "num in", "value", "when", "average");
+    report.put("%8s %11s %8s %11s %8s %11s\n", "", "", "interval", "", "", "value");
     for (auto elem:*data) {
         sum2 += elem.value;
         ++num;
-        if (sum2 >= sum * percent / 10) {
-            percentile[percent] = num;
-            report.put("%8d %8d %8d %8d %8d %8ld\n", (sum2 == sum) ? 100 : percent * 10, sum2, num,
-                       elem.value, elem.time, sum2 / num);
-            percent++;
+        if (sum2 >= sum * percentIndex / divisions) {
+            percentile[percentIndex] = num - lastnum;
+            lastnum = num;
+            report.put("%6.1f%2s %11ld %8d %11ld %8d %11ld\n",
+                       (sum2 == sum) ? 100 : sum2 * 100.0 / sum, "%",
+                       sum2, percentile[percentIndex], elem.value, elem.time, sum2 / num);
+            percentIndex++;
         }
     }
-    report.put("Num of maxe's = %d\n", percentile[percent - 1] - percentile[percent - 2]);
+    int numOfMaxes = percentile[percentIndex - 1];
+    report.put("Num of maxe's = %d (%5.4f%2s)\n", numOfMaxes, num > 0 ? numOfMaxes * 100.0 / num : 0,
+               "%");
     delete data;
 }
 
