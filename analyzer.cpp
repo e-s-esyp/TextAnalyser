@@ -13,13 +13,13 @@ void fileAnalyzer::parse() {
     auto buffer = new char[size];
     file.seekg(0, ios_base::beg);
     file.read(buffer, size);
-    const long actualBufferSize = file.gcount();
-    for (long i = actualBufferSize; i < size; ++i) {
+    fileSize = file.gcount();
+    for (long i = fileSize; i < size; ++i) {
         buffer[i] = 0;
     }
     file.close();
     report.putTimed("File read.");
-    data = lineParserChar::parseBuffer(buffer, actualBufferSize, report);
+    data = lineParserChar::parseBuffer(buffer, fileSize, report);
     delete[] buffer;
 }
 
@@ -48,6 +48,23 @@ void fileAnalyzer::analyze() {
         ++num;
         report.put("%8d %8d %8d %8ld\n", num, it->value, it->time, sum / num);
     }
+    int percentile[11];
+    int percent = 0;
+    long sum2 = 0;
+    num = 0;
+    report.put("%8s %8s %8s %8s %8s %8s\n", "percent", "sum", "num", "value", "when", "average");
+    report.put("%8s %8s %8s %8s %8s %8s\n", "", "", "", "", "", "value");
+    for (auto elem:*data) {
+        sum2 += elem.value;
+        ++num;
+        if (sum2 >= sum * percent / 10) {
+            percentile[percent] = num;
+            report.put("%8d %8d %8d %8d %8d %8ld\n", (sum2 == sum) ? 100 : percent * 10, sum2, num,
+                       elem.value, elem.time, sum2 / num);
+            percent++;
+        }
+    }
+    report.put("Num of maxe's = %d\n", percentile[percent - 1] - percentile[percent - 2]);
     delete data;
 }
 
@@ -67,5 +84,9 @@ string fileAnalyzer::getName() {
 
 bool fileAnalyzer::isFinished() {
     return finished;
+}
+
+long fileAnalyzer::getFileSize() {
+    return fileSize;
 }
 

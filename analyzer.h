@@ -15,6 +15,8 @@ protected:
     stringLogger report;
     list<S> *data = nullptr;
     bool finished;
+    long fileSize;
+
     void parse();
 
     void analyze();
@@ -23,6 +25,7 @@ public:
     explicit fileAnalyzer(const string &fullName) {
         name.assign(fullName);
         finished = false;
+        fileSize = 0;
     }
 
     void perform();
@@ -30,6 +33,8 @@ public:
     string getReport();
 
     string getName();
+
+    long getFileSize();
 
     bool isFinished();
 };

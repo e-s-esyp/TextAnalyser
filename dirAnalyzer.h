@@ -13,7 +13,7 @@ namespace dirAnalyzer {
 
     vector<string> *getSubDirs(const char *dirName);
 
-    void analyze(const char *name, int numControls);
+    unsigned long  analyze(const char *name, int numControls);
 
 }
 #endif //ANALIZER_DIRANALYZER_H

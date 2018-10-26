@@ -75,7 +75,7 @@ namespace dirAnalyzer {
         analyzer->perform();
     }
 
-    void analyze(const char *dirName, int numControls) {
+    unsigned long analyze(const char *dirName, int numControls) {
         auto files = dirAnalyzer::getList(dirName);
         files->sort();
         logger::putTimed("Have a dirList:");
@@ -107,11 +107,17 @@ namespace dirAnalyzer {
             delete control;
         }
         ofstream output(string(dirName) + ".report");
+        unsigned long numFiles = tasks.size();
+        unsigned long totalSize = 0;
+        output << "Total: " << tasks.size() << " files.\n";
         for (const auto task:tasks) {
             output << task->getReport();
+            totalSize += task->getFileSize();
             delete task;
         }
+        output << "Total: " << totalSize << " bytes in " << numFiles << " file(s).\n";
         output.close();
+        return numFiles;
     }
 }
 

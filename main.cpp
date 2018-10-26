@@ -70,9 +70,11 @@ int main(int argc, char **argv) {
         for (const auto &subdir:*subDirs) {
             logger::put("%2d %s\n", i++, subdir.data());
         }
+        unsigned long numFiles = 0;
         for (const auto &subdir:*subDirs) {
-            dirAnalyzer::analyze(subdir.data(), numThreads);
+            numFiles += dirAnalyzer::analyze(subdir.data(), numThreads);
         }
+        logger::putTimed("Total number of files = %d", numFiles);
         delete subDirs;
     } else {
         dirAnalyzer::analyze(args.assigns["dir"].data(), numThreads);
