@@ -75,7 +75,7 @@ namespace dirAnalyzer {
         analyzer->perform();
     }
 
-    void analyze(const char *dirName) {
+    void analyze(const char *dirName, int numControls) {
         auto files = dirAnalyzer::getList(dirName);
         files->sort();
         logger::putTimed("Have a dirList:");
@@ -85,8 +85,6 @@ namespace dirAnalyzer {
             tasks.push_back(new fileAnalyzer(file));
         }
         delete files;
-        //TODO: define by argv
-        int numControls = 3;
         threadControl *controls[numControls];
         for (int i = 0; i < numControls; i++) {
             controls[i] = new threadControl(i + 1);
