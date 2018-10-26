@@ -4,6 +4,7 @@
 
 void fileAnalyzer::parse() {
     //TODO: make buffer less then filesize
+    //TODO: make parseBuffer in loop
     report.putTimed("File: %s", name.data());
     ifstream file(name, ios::binary);
     file.seekg(0, ios_base::end);
