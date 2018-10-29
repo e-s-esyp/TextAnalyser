@@ -6,6 +6,6 @@ struct S {
     int value;
 };
 
-#define MAX_BUF_SIZE 20
+#define MAX_BUF_SIZE 100000000
 
 #endif //ANALIZER_MAINSTRUCTURE_H
