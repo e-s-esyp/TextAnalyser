@@ -2,16 +2,13 @@
 #include <map>
 #include "logger.h"
 #include "dirAnalyzer.h"
-#include "myStrings.cpp"
 
+#ifndef __e2k__
+
+#include "pngWriter.h"
+
+#endif
 using namespace std;
-
-void printDefault() {
-    logger::put("Analyzer options:\n");
-    logger::put("-j=<num threads>\n");
-    logger::put("-maindir=<dir name, where subdirs will be analyzed>\n");
-    logger::put("-dir=<dir name, where .log files will be analyzed>\n");
-}
 
 class arguments {
 public:
@@ -34,52 +31,79 @@ public:
             }
         }
     }
+
+    void printDefault() {
+        logger::put("Analyzer options:\n");
+        logger::put("-j=<num threads>\n");
+        logger::put("-maindir=<dir name, where subdirs will be analyzed>\n");
+        logger::put("-dir=<dir name, where .log files will be analyzed>\n");
+    }
+
+    void runAnalizer() {
+        if (error) {
+            printDefault();
+            return;
+        }
+        int numThreads = 1;
+        if (assigns.find("j") != assigns.end()) {
+            numThreads = stoi(assigns["j"]);
+            assigns.erase("j");
+        }
+        logger::put("Number of used threads at one time = %d\n", numThreads);
+        string mainDir(".");
+        if (assigns.find("maindir") != assigns.end()) {
+            mainDir = assigns["maindir"];
+            assigns.erase("maindir");
+        }
+        bool allDirs = true;
+        string dir;
+        if (assigns.find("dir") != assigns.end()) {
+            dir = assigns["dir"];
+            allDirs = false;
+            assigns.erase("dir");
+        }
+        if (!assigns.empty()) {
+            printDefault();
+            return;
+        }
+        if (allDirs) {
+            logger::put("Processing all subdirs:\n");
+            auto subDirs = dirAnalyzer::getSubDirs(mainDir.data());
+            int i = 0;
+            for (const auto &subdir:*subDirs) {
+                logger::put("%2d %s\n", i++, subdir.data());
+            }
+            unsigned long numFiles = 0;
+            for (const auto &subdir:*subDirs) {
+                numFiles += dirAnalyzer::analyze(subdir.data(), numThreads);
+            }
+            logger::putTimed("Total number of files = %d", numFiles);
+            delete subDirs;
+        } else {
+            dirAnalyzer::analyze(dir.data(), numThreads);
+        }
+    }
 };
 
-int main(int argc, char **argv) {
+#ifdef __e2k__
+void function1(int argc, char **argv) {
     logger::putTimed("Starting. WARNING: max file size %d byte", MAX_BUF_SIZE);
     arguments args(argc, argv);
-    if (args.error) {
-        printDefault();
-        return -1;
-    }
-    int numThreads = 1;
-    if (args.assigns.find("j") != args.assigns.end()) {
-        numThreads = stoi(args.assigns["j"]);
-        args.assigns.erase("j");
-    }
-    logger::put("Number of used threads at one time = %d\n", numThreads);
-    string mainDir(".");
-    if (args.assigns.find("maindir") != args.assigns.end()) {
-        mainDir = args.assigns["maindir"];
-        args.assigns.erase("maindir");
-    }
-    bool allDirs = true;
-    string dir;
-    if (args.assigns.find("dir") != args.assigns.end()) {
-        dir = args.assigns["dir"];
-        allDirs = false;
-        args.assigns.erase("dir");
-    }
-    if (!args.assigns.empty()) {
-        printDefault();
-        return -1;
-    }
-    if (allDirs) {
-        logger::put("Processing all subdirs:\n");
-        auto subDirs = dirAnalyzer::getSubDirs(mainDir.data());
-        int i = 0;
-        for (const auto &subdir:*subDirs) {
-            logger::put("%2d %s\n", i++, subdir.data());
-        }
-        unsigned long numFiles = 0;
-        for (const auto &subdir:*subDirs) {
-            numFiles += dirAnalyzer::analyze(subdir.data(), numThreads);
-        }
-        logger::putTimed("Total number of files = %d", numFiles);
-        delete subDirs;
-    } else {
-        dirAnalyzer::analyze(dir.data(), numThreads);
-    }
+    args.runAnalizer();
+}
+#else
+
+void function1(int argc, char **argv) {
+    auto a = string("a.png");
+    const char *argv2[2];
+    argv2[0] = argv[0];
+    argv2[1] = a.data();
+    write_png_file(2, &argv2[0]);
+}
+
+#endif
+
+int main(int argc, char **argv) {
+    function1(argc, argv);
     return 0;
 }
