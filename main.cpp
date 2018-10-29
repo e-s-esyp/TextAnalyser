@@ -55,7 +55,9 @@ int main(int argc, char **argv) {
         args.assigns.erase("maindir");
     }
     bool allDirs = true;
+    string dir;
     if (args.assigns.find("dir") != args.assigns.end()) {
+        dir = args.assigns["dir"];
         allDirs = false;
         args.assigns.erase("dir");
     }
@@ -77,7 +79,7 @@ int main(int argc, char **argv) {
         logger::putTimed("Total number of files = %d", numFiles);
         delete subDirs;
     } else {
-        dirAnalyzer::analyze(args.assigns["dir"].data(), numThreads);
+        dirAnalyzer::analyze(dir.data(), numThreads);
     }
     return 0;
 }

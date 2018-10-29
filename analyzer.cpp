@@ -3,25 +3,34 @@
 #include <fstream>
 
 void fileAnalyzer::parse() {
-    //TODO: make buffer less then filesize
-    //TODO: make parseBuffer in loop
+    data = new list<S>;
     report.putTimed("File: %s", name.data());
     ifstream file(name, ios::binary);
     file.seekg(0, ios_base::end);
-    long size = file.tellg();
-    if (size > MAX_BUF_SIZE - 1) {
-        size = MAX_BUF_SIZE - 1;
+    long fileSize = file.tellg();
+    long leftSize = fileSize;
+    long toReadSize = leftSize;
+    if (toReadSize > MAX_BUF_SIZE - 1) {
+        toReadSize = MAX_BUF_SIZE - 1;
     }
-    auto buffer = new char[size];
+    auto buffer = new char[toReadSize];
     file.seekg(0, ios_base::beg);
-    file.read(buffer, size);
-    fileSize = file.gcount();
-    for (long i = fileSize; i <= size; ++i) {
-        buffer[i] = 0;
+    long lastRemainsSize = 0;
+    int numLines = 0;
+    while (leftSize > 0) {
+        toReadSize = leftSize;
+        if (toReadSize > MAX_BUF_SIZE - lastRemainsSize - 1) {
+            toReadSize = MAX_BUF_SIZE - lastRemainsSize - 1;
+        }
+        file.read(buffer + lastRemainsSize, toReadSize);
+        long readSize = file.gcount();
+        buffer[lastRemainsSize + readSize] = 0;
+        leftSize -= readSize;
+        lineParserChar::parseBuffer(data, buffer, lastRemainsSize + readSize, leftSize == 0, &report,
+                                    lastRemainsSize, &numLines);
     }
     file.close();
-    report.putTimed("File read.");
-    data = lineParserChar::parseBuffer(buffer, fileSize, report);
+    report.putTimed("File read. Total: %d lines.", numLines);
     delete[] buffer;
 }
 
@@ -73,7 +82,7 @@ void fileAnalyzer::analyze() {
         }
     }
     int numOfMaxes = percentile[percentIndex - 1];
-    report.put("Num of maxe's = %d (%5.4f%2s)\n", numOfMaxes, num > 0 ? numOfMaxes * 100.0 / num : 0,
+    report.put("Num of max's = %d (%5.4f%2s)\n", numOfMaxes, num > 0 ? numOfMaxes * 100.0 / num : 0,
                "%");
     delete data;
 }

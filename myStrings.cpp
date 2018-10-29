@@ -1,3 +1,6 @@
+#ifndef MY_STRINGS_CPP
+#define MY_STRINGS_CPP
+
 namespace myStrings {
     inline bool isDecimal(char x) {
         return '0' <= x && x <= '9';
@@ -20,4 +23,13 @@ namespace myStrings {
         }
         return isEqual(name, filter);
     }
+
+    inline void copy0(char *destination, const char *source, long i) {
+        for (int j = 0; j < i; ++j) {
+            *(destination++) = *(source++);
+        }
+        *(destination) = 0;
+    }
 }
+
+#endif //MY_STRINGS_CPP

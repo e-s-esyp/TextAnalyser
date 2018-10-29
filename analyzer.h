@@ -13,7 +13,7 @@ class fileAnalyzer {
 protected:
     string name{};
     stringLogger report;
-    list<S> *data = nullptr;
+    list<S>* data;
     bool finished;
     long fileSize;
 
