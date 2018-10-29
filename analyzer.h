@@ -23,6 +23,7 @@ protected:
 
 public:
     explicit fileAnalyzer(const string &fullName) {
+        data = nullptr;
         name.assign(fullName);
         finished = false;
         fileSize = 0;

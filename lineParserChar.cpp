@@ -1,3 +1,4 @@
+#include <vector>
 #include "lineParserChar.h"
 #include "myStrings.cpp"
 
@@ -54,9 +55,9 @@ namespace lineParserChar {
         void getLine() {
             char *k = lineData;
             const char *l = buffer + lineStartIndex;
-            long lineCheckIndex = 0;
+            long lineCheckIndex = lineStartIndex;
             int n = 0;
-            while ((*l != '\n') && (lineCheckIndex < actualBufferSize) && (n < 999)) {
+            while ((*l != '\n') && (lineCheckIndex < actualBufferSize) && (n < 100)) {
                 *(k++) = *(l++);
                 lineCheckIndex++;
                 n++;
@@ -142,21 +143,16 @@ namespace lineParserChar {
                     }
                 };
                 skipInt();
-                if (bufferHeadIndex >= actualBufferSize) {
-                    if (isFileEnd) dataList->push_back(s);
-                    break;
-                } else {
-                    if (parseCheck("\n")) {
-                        if (bufferHeadIndex >= actualBufferSize) {
-                            if (isFileEnd) printError("\\n");
-                            break;
-                        } else {
-                            printError("\\n");
-                            continue;
-                        }
+                if (parseCheck("\n")) {
+                    if (bufferHeadIndex >= actualBufferSize) {
+                        if (isFileEnd) printError("\\n");
+                        break;
+                    } else {
+                        printError("\\n");
+                        continue;
                     }
-                    dataList->push_back(s);
                 }
+                dataList->push_back(s);
             }
             return parseBack();
         }
