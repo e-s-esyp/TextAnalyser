@@ -6,7 +6,6 @@
 #ifndef __e2k__
 
 #include "pngWriter.h"
-#include "mandelbrotWriter.h"
 
 #endif
 using namespace std;
@@ -86,20 +85,10 @@ public:
     }
 };
 
-#ifdef __e2k__
 void function1(int argc, char **argv) {
     logger::putTimed("Starting. WARNING: max file size %d byte", MAX_BUF_SIZE);
     arguments args(argc, argv);
     args.runAnalizer();
-}
-#else
-
-void function1(int argc, char **argv) {
-    auto a = string("a.png");
-    const char *argv2[2];
-    argv2[0] = argv[0];
-    argv2[1] = a.data();
-    write_png_file(2, &argv2[0]);
 }
 
 void function2() {
@@ -117,10 +106,8 @@ void function2() {
     writePNG(fileName, width, height, imageData, title);
 }
 
-#endif
-
 int main(int argc, char **argv) {
-//    function1(argc, argv);
-    function2();
+    function1(argc, argv);
+//    function2();
     return 0;
 }

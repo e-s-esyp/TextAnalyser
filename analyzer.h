@@ -13,9 +13,14 @@ class fileAnalyzer {
 protected:
     string name{};
     stringLogger report;
-    list<S>* data;
+    list<S> *data;
     bool finished;
     long fileSize;
+    S min{};
+    S max{};
+    const unsigned int width = 1024;
+    const unsigned int height = 256;
+    unsigned char **imageData;
 
     void parse();
 
@@ -27,6 +32,21 @@ public:
         name.assign(fullName);
         finished = false;
         fileSize = 0;
+        imageData = new unsigned char *[height];
+        for (int i = 0; i < height; ++i) {
+            imageData[i] = new unsigned char[width * 3];
+            for (int j = 0; j < width * 3; ++j) {
+                imageData[i][j] = 240;
+            }
+        };
+
+    }
+
+    ~fileAnalyzer() {
+        for (int i = 0; i < height; ++i) {
+            delete [] imageData[i];
+        };
+        delete imageData;
     }
 
     void perform();
@@ -38,6 +58,10 @@ public:
     long getFileSize();
 
     bool isFinished();
+
+    void writeFigure();
+
+    void setMinMax();
 };
 
 #endif //ANALIZER_PARSER_H

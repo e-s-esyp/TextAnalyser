@@ -1,5 +1,6 @@
 #include "analyzer.h"
 #include "lineParserChar.h"
+#include "pngWriter.h"
 #include <fstream>
 
 void fileAnalyzer::parse() {
@@ -34,7 +35,32 @@ void fileAnalyzer::parse() {
     delete[] buffer;
 }
 
+void fileAnalyzer::setMinMax() {
+    for (auto d:*data) {
+        if (d.time < min.time) min.time = d.time;
+        if (d.time > max.time) max.time = d.time;
+        if (d.value < min.value) min.value = d.value;
+        if (d.value > max.value) max.value = d.value;
+    }
+}
+
+void fileAnalyzer::writeFigure() {
+    auto fileName(name + ".png");
+    auto title("title");
+    S diff = {max.time - min.time, max.value - min.value};
+    for (auto d:*data) {
+        auto x = int(((double) (d.time - min.time)) / diff.time * width);
+        auto y = height - int(((double) (d.value - min.value)) / diff.value * height);
+        imageData[y][x * 3] = 0;
+        imageData[y][x * 3 + 1] = 0;
+        imageData[y][x * 3 + 2] = 0;
+    }
+    writePNG(fileName.data(), width, height, imageData, title);
+}
+
 void fileAnalyzer::analyze() {
+    setMinMax();
+    writeFigure();
     auto last = data->end();
     report.put("Last time = %d\n", (--last)->time);
     data->sort([&](S a, S b) { return a.value < b.value; });
