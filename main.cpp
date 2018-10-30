@@ -6,6 +6,7 @@
 #ifndef __e2k__
 
 #include "pngWriter.h"
+#include "mandelbrotWriter.h"
 
 #endif
 using namespace std;
@@ -101,9 +102,25 @@ void function1(int argc, char **argv) {
     write_png_file(2, &argv2[0]);
 }
 
+void function2() {
+    auto fileName("image.png");
+    unsigned int width = 512;
+    unsigned int height = 512;
+    unsigned char *imageData[height];
+    auto title("title");
+    for (int i = 0; i < height; ++i) {
+        imageData[i] = new unsigned char[width * 3];
+        for (int j = 0; j < width * 3; ++j) {
+            imageData[i][j] = static_cast<unsigned char>(i + j);
+        }
+    };
+    writePNG(fileName, width, height, imageData, title);
+}
+
 #endif
 
 int main(int argc, char **argv) {
-    function1(argc, argv);
+//    function1(argc, argv);
+    function2();
     return 0;
 }

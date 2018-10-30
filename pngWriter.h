@@ -1,9 +1,7 @@
 #ifndef ANALIZER_PNGWRITER_H
 #define ANALIZER_PNGWRITER_H
 
-class pngWriter {
-
-};
-int write_png_file(int argc, const char **argv);
+int writePNG(const char *fileName, unsigned int width, unsigned int height, unsigned char **imageData,
+             const char *title);
 
 #endif //ANALIZER_PNGWRITER_H
