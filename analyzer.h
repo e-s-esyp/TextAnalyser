@@ -21,6 +21,7 @@ protected:
     unsigned int height;
     unsigned int width;
     unsigned char **imageData;
+    long maxLevel = 0;
 
     void parse();
 

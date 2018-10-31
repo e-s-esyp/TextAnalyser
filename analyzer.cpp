@@ -48,13 +48,20 @@ void fileAnalyzer::writeFigure() {
     S diff = {max.time - min.time, max.value - min.value};
     if (diff.time <= 0 || diff.value <= 0) return;
     for (auto d:*data) {
+        bool accent = d.value > maxLevel;
         auto x = int(((double) (d.time - min.time)) / diff.time * width);
-        auto y = height - int(((double) (d.value - min.value)) / diff.value * height);
+        auto y = int(((double) (d.value - min.value)) / diff.value * height);
         if (x >= width) {
             x = width - 1;
         }
         if (y >= height) {
             y = height - 1;
+        }
+        if (accent) {
+            for (int i = 0; i < height; ++i) {
+                imageData[i][x * 3] = 0;
+                imageData[i][x * 3 + 2] = 0;
+            }
         }
         imageData[y][x * 3] = 0;
         imageData[y][x * 3 + 1] = 0;
@@ -64,7 +71,6 @@ void fileAnalyzer::writeFigure() {
 
 void fileAnalyzer::analyze() {
     setMinMax();
-    writeFigure();
     auto last = data->end();
     report.put("Last time = %d\n", (--last)->time);
     data->sort([&](S a, S b) { return a.value < b.value; });
@@ -93,17 +99,20 @@ void fileAnalyzer::analyze() {
     }
     const int divisions = 100;
     int percentile[divisions + 1];
+    int levels[divisions + 1];
     int percentIndex = 0;
     long sum2 = 0;
     num = 0;
     int lastnum = 0;
-    report.put("%8s %11s %8s %11s %8s %11s\n", "percent", "sum", "num in", "value", "when", "average");
+    report.put("%8s %11s %8s %11s %8s %11s\n", "percent", "sum", "num in", "value", "when",
+               "average");
     report.put("%8s %11s %8s %11s %8s %11s\n", "", "", "interval", "", "", "value");
     for (auto elem:*data) {
         sum2 += elem.value;
         ++num;
         if (sum2 >= sum * percentIndex / divisions) {
             percentile[percentIndex] = num - lastnum;
+            levels[percentIndex] = elem.value;
             lastnum = num;
             report.put("%6.1f%2s %11ld %8d %11ld %8d %11ld\n",
                        (sum2 == sum) ? 100 : sum2 * 100.0 / sum, "%",
@@ -111,9 +120,13 @@ void fileAnalyzer::analyze() {
             percentIndex++;
         }
     }
+    maxLevel = 1000;//levels[percentIndex * 9 / 10];
+    writeFigure();
     int numOfMaxes = percentile[percentIndex - 1];
-    report.put("Num of max's = %d (%5.4f%2s)\n", numOfMaxes, num > 0 ? numOfMaxes * 100.0 / num : 0,
+    report.put("Num of max's = %d (%5.4f%2s)\n", numOfMaxes,
+               num > 0 ? numOfMaxes * 100.0 / num : 0,
                "%");
+    report.put("Figure: maxLevel = %d\n", maxLevel);
     delete data;
 }
 
@@ -143,7 +156,7 @@ void fileAnalyzer::drawFigure(unsigned char **picture, int figureIndex) {
     figureIndex--;
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width * 3; ++j) {
-            picture[figureIndex * height + i][j] = imageData[i][j];
+            picture[figureIndex * height + i][j] = imageData[height - i - 1][j];
         }
     }
 }
