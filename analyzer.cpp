@@ -45,17 +45,21 @@ void fileAnalyzer::setMinMax() {
 }
 
 void fileAnalyzer::writeFigure() {
-    auto fileName(name + ".png");
-    auto title("title");
     S diff = {max.time - min.time, max.value - min.value};
+    if (diff.time <= 0 || diff.value <= 0) return;
     for (auto d:*data) {
         auto x = int(((double) (d.time - min.time)) / diff.time * width);
         auto y = height - int(((double) (d.value - min.value)) / diff.value * height);
+        if (x >= width) {
+            x = width - 1;
+        }
+        if (y >= height) {
+            y = height - 1;
+        }
         imageData[y][x * 3] = 0;
         imageData[y][x * 3 + 1] = 0;
         imageData[y][x * 3 + 2] = 0;
     }
-    writePNG(fileName.data(), width, height, imageData, title);
 }
 
 void fileAnalyzer::analyze() {
@@ -133,5 +137,14 @@ bool fileAnalyzer::isFinished() {
 
 long fileAnalyzer::getFileSize() {
     return fileSize;
+}
+
+void fileAnalyzer::drawFigure(unsigned char **picture, int figureIndex) {
+    figureIndex--;
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width * 3; ++j) {
+            picture[figureIndex * height + i][j] = imageData[i][j];
+        }
+    }
 }
 

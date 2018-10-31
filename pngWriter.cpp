@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <png.h>
+#include <libpng12/png.h>
 #include "pngWriter.h"
 #include "myStrings.cpp"
 

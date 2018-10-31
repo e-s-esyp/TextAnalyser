@@ -2,6 +2,7 @@
 #include "myStrings.cpp"
 #include "logger.h"
 #include "analyzer.h"
+#include "pngWriter.h"
 #include <dirent.h>
 #include <fstream>
 
@@ -80,9 +81,11 @@ namespace dirAnalyzer {
         files->sort();
         logger::putTimed("Have a dirList:");
         list<fileAnalyzer *> tasks;
+        unsigned int figureHeight = 384;
+        unsigned int figureWidth = 2048;
         for (const auto &file:*files) {
             logger::put("%s\n", file.data());
-            tasks.push_back(new fileAnalyzer(file));
+            tasks.push_back(new fileAnalyzer(file, figureHeight, figureWidth));
         }
         delete files;
         threadControl *controls[numControls];
@@ -110,11 +113,39 @@ namespace dirAnalyzer {
         unsigned long numFiles = tasks.size();
         unsigned long totalSize = 0;
         output << "Total: " << tasks.size() << " files.\n";
+        unsigned int pictureHeight = figureHeight * 8;
+        unsigned int pictureWidth = figureWidth;
+        auto **picture = new unsigned char *[pictureHeight];
+        for (int i = 0; i < pictureHeight; ++i) {
+            picture[i] = new unsigned char[pictureWidth * 3];
+        }
+        int numFigure = 0;
         for (const auto task:tasks) {
             output << task->getReport();
+            task->drawFigure(picture, ++numFigure);
             totalSize += task->getFileSize();
+            if (numFigure == 8) {
+                numFigure = 0;
+                auto fileName(task->getName() + ".png");
+                auto title("title");
+                writePNG(fileName.data(), pictureWidth, pictureHeight, picture, title);
+            }
             delete task;
         }
+        if (numFigure != 0) {
+            auto fileName(string(dirName) + "/remains.png");
+            auto title("title");
+            for (int i = numFigure * figureHeight; i < pictureHeight; ++i) {
+                for (int j = 0; j < pictureWidth * 3; ++j) {
+                    picture[i][j] = 255;
+                }
+            }
+            writePNG(fileName.data(), pictureWidth, pictureHeight, picture, title);
+        }
+        for (int i = 0; i < pictureHeight; ++i) {
+            delete[] picture[i];
+        }
+        delete[] picture;
         output << "Total: " << totalSize << " bytes in " << numFiles << " file(s).\n";
         output.close();
         return numFiles;

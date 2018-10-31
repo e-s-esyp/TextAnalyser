@@ -18,8 +18,8 @@ protected:
     long fileSize;
     S min{};
     S max{};
-    const unsigned int width = 1024;
-    const unsigned int height = 256;
+    unsigned int height;
+    unsigned int width;
     unsigned char **imageData;
 
     void parse();
@@ -27,26 +27,27 @@ protected:
     void analyze();
 
 public:
-    explicit fileAnalyzer(const string &fullName) {
+    explicit fileAnalyzer(const string &fullName, unsigned int height_, unsigned int width_) {
         data = nullptr;
         name.assign(fullName);
+        height = height_;
+        width = width_;
         finished = false;
         fileSize = 0;
         imageData = new unsigned char *[height];
         for (int i = 0; i < height; ++i) {
             imageData[i] = new unsigned char[width * 3];
             for (int j = 0; j < width * 3; ++j) {
-                imageData[i][j] = 240;
+                imageData[i][j] = 254;
             }
-        };
-
+        }
     }
 
     ~fileAnalyzer() {
         for (int i = 0; i < height; ++i) {
-            delete [] imageData[i];
+            delete[] imageData[i];
         };
-        delete imageData;
+        delete[] imageData;
     }
 
     void perform();
@@ -62,6 +63,8 @@ public:
     void writeFigure();
 
     void setMinMax();
+
+    void drawFigure(unsigned char **picture, int figureIndex);
 };
 
 #endif //ANALIZER_PARSER_H
