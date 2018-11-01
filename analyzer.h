@@ -28,11 +28,11 @@ protected:
     void analyze();
 
 public:
-    explicit fileAnalyzer(const string &fullName, unsigned int height_, unsigned int width_) {
+    explicit fileAnalyzer(const string &fullName, unsigned int height, unsigned int width) {
         data = nullptr;
         name.assign(fullName);
-        height = height_;
-        width = width_;
+        fileAnalyzer::height = height;
+        fileAnalyzer::width = width;
         finished = false;
         fileSize = 0;
         imageData = new unsigned char *[height];
