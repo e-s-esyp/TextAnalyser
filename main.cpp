@@ -5,7 +5,7 @@
 
 #ifndef __e2k__
 
-#include "pngWriter.h"
+#include "window.h"
 
 #endif
 using namespace std;
@@ -44,6 +44,10 @@ public:
             printDefault();
             return;
         }
+        if (assigns.find("window") != assigns.end()) {
+            window::test();
+            return;
+        }
         int numThreads = 1;
         if (assigns.find("j") != assigns.end()) {
             numThreads = stoi(assigns["j"]);
@@ -66,6 +70,7 @@ public:
             printDefault();
             return;
         }
+        logger::putTimed("Starting. WARNING: file buffer size = %d byte", MAX_BUF_SIZE);
         if (allDirs) {
             logger::put("Processing all subdirs:\n");
             auto subDirs = dirAnalyzer::getSubDirs(mainDir.data());
@@ -86,28 +91,11 @@ public:
 };
 
 void function1(int argc, char **argv) {
-    logger::putTimed("Starting. WARNING: max file size %d byte", MAX_BUF_SIZE);
     arguments args(argc, argv);
     args.runAnalizer();
 }
 
-void function2() {
-    auto fileName("image.png");
-    unsigned int width = 512;
-    unsigned int height = 512;
-    unsigned char *imageData[height];
-    auto title("title");
-    for (int i = 0; i < height; ++i) {
-        imageData[i] = new unsigned char[width * 3];
-        for (int j = 0; j < width * 3; ++j) {
-            imageData[i][j] = static_cast<unsigned char>(i + j);
-        }
-    };
-    writePNG(fileName, width, height, imageData, title);
-}
-
 int main(int argc, char **argv) {
     function1(argc, argv);
-//    function2();
     return 0;
 }

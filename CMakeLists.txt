@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.9)
 project(analizer)
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "-pthread")
+set (CMAKE_CXX_FLAGS "-pthread -lX11")
 
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
+
+add_library(window window.h window.cpp )
 
 add_library(pngWriter pngWriter.h pngWriter.cpp )
 
@@ -22,4 +24,5 @@ target_link_libraries(parserAnalyzer lineParserChar stringLogger)
 add_library(dirAnalyzer dirAnalyzer.h dirAnalyzer.cpp myStrings.cpp)
 
 add_executable(analyzer main.cpp mainStructure.h myStrings.cpp)
-target_link_libraries(analyzer logger dirAnalyzer parserAnalyzer pngWriter ${PNG_LIBRARY})
+target_link_libraries(analyzer window logger dirAnalyzer parserAnalyzer pngWriter ${PNG_LIBRARY})
+target_link_libraries(analyzer X11)

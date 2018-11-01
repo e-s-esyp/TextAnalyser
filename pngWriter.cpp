@@ -60,3 +60,19 @@ int writePNG(const char *fileName, unsigned int width, unsigned int height, unsi
     return code;
 }
 
+namespace pngWriter {
+    void test() {
+        auto fileName("image.png");
+        unsigned int width = 512;
+        unsigned int height = 512;
+        unsigned char *imageData[height];
+        auto title("title");
+        for (int i = 0; i < height; ++i) {
+            imageData[i] = new unsigned char[width * 3];
+            for (int j = 0; j < width * 3; ++j) {
+                imageData[i][j] = static_cast<unsigned char>(i + j);
+            }
+        };
+        writePNG(fileName, width, height, imageData, title);
+    }
+}
